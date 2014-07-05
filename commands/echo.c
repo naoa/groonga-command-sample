@@ -1,5 +1,3 @@
-#include <string.h>
-#include <stdlib.h>
 #include <groonga/plugin.h>
 
 #ifdef __GNUC__
@@ -12,28 +10,24 @@ static grn_obj *
 command_echo(grn_ctx *ctx, GNUC_UNUSED int nargs, GNUC_UNUSED grn_obj **args,
              grn_user_data *user_data)
 {
-  const char *arg_str = GRN_TEXT_VALUE(grn_plugin_proc_get_var_by_offset(ctx, user_data, 0));
-  int arg_length = GRN_TEXT_LEN(grn_plugin_proc_get_var_by_offset(ctx, user_data, 0));
+  grn_obj *var;
+
+  char *input = NULL;
+  unsigned int input_len = 0;
+
+  var = grn_plugin_proc_get_var(ctx, user_data, "input", -1);
+  if(GRN_TEXT_LEN(var) != 0) {
+    input = GRN_TEXT_VALUE(var);
+    input_len = GRN_TEXT_LEN(var);
+  }
 
   grn_ctx_output_array_open(ctx, "RESULT", 2);
-  grn_ctx_output_cstr(ctx, arg_str);
-  grn_ctx_output_int64(ctx, arg_length);
+  grn_ctx_output_cstr(ctx, input);
+  grn_ctx_output_int64(ctx, input_len);
   grn_ctx_output_array_close(ctx);
 
   return NULL;
 }
-
-/* lib/proc.c */
-#define GRN_STRLEN(s) ((s) ? strlen(s) : 0)
-#define DEF_VAR(v,name_str) do {\
-(v).name = (name_str);\
-(v).name_size = GRN_STRLEN(name_str);\
-GRN_TEXT_INIT(&(v).value, 0);\
-} while (0)
-
-#define DEF_COMMAND(name, func, nvars, vars)\
-(grn_proc_create(ctx, (name), (sizeof(name) - 1),\
-GRN_PROC_COMMAND, (func), NULL, NULL, (nvars), (vars)))
 
 grn_rc
 GRN_PLUGIN_INIT(GNUC_UNUSED grn_ctx *ctx)
@@ -45,8 +39,9 @@ grn_rc
 GRN_PLUGIN_REGISTER(grn_ctx *ctx)
 {
   grn_expr_var vars[1];
-  DEF_VAR(vars[0], "echo");
-  DEF_COMMAND("echo", command_echo, 1, vars);
+
+  grn_plugin_expr_var_init(ctx, &vars[0], "input", -1);
+  grn_plugin_command_create(ctx, "echo", -1, command_echo, 1, vars);
 
   return ctx->rc;
 }
