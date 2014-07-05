@@ -10,7 +10,7 @@
 
 static grn_obj *
 command_echo(grn_ctx *ctx, GNUC_UNUSED int nargs, GNUC_UNUSED grn_obj **args,
-                  grn_user_data *user_data)
+             grn_user_data *user_data)
 {
   const char *arg_str = GRN_TEXT_VALUE(grn_plugin_proc_get_var_by_offset(ctx, user_data, 0));
   int arg_length = GRN_TEXT_LEN(grn_plugin_proc_get_var_by_offset(ctx, user_data, 0));
