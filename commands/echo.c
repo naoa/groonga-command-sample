@@ -16,6 +16,10 @@ command_echo(grn_ctx *ctx, GNUC_UNUSED int nargs, GNUC_UNUSED grn_obj **args,
   unsigned int input_len = 0;
 
   var = grn_plugin_proc_get_var(ctx, user_data, "input", -1);
+
+  GRN_PLUGIN_LOG(ctx, GRN_LOG_NOTICE, "[echo] input = %.*s",
+                 GRN_TEXT_LEN(var), GRN_TEXT_VALUE(var));
+
   if(GRN_TEXT_LEN(var) != 0) {
     input = GRN_TEXT_VALUE(var);
     input_len = GRN_TEXT_LEN(var);

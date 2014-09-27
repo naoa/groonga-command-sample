@@ -1,0 +1,4 @@
+register commands/echo
+[[0,0.0,0.0],true]
+echo "hello world\n"
+[[0,0.0,0.0],["hello world\n",12]]
